@@ -118,7 +118,7 @@ export function TeamSection() {
                     </div>
                     
                     {/* Hover overlay with social links */}
-                    <div className="absolute inset-0 bg-foreground/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <div className="absolute inset-0 bg-secondary/90 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                       <a href="#" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-primary transition-colors">
                         <Linkedin className="w-5 h-5 text-white" />
                       </a>

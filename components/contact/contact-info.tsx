@@ -81,7 +81,7 @@ export function ContactInfo() {
               <a
                 key={social.label}
                 href={social.href}
-                className="w-11 h-11 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors group"
+                className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors group"
                 aria-label={social.label}
               >
                 <social.icon className="w-5 h-5" />

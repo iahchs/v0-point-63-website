@@ -29,7 +29,7 @@ const process = [
 
 export function ProcessSection() {
   return (
-    <section className="py-20 lg:py-28 bg-foreground">
+    <section className="py-20 lg:py-28 gradient-dark">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -46,7 +46,7 @@ export function ProcessSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-background"
+            className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-white"
           >
             Our Process
           </motion.h2>
@@ -55,7 +55,7 @@ export function ProcessSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-background/70"
+            className="text-lg text-white/70"
           >
             A streamlined workflow designed to bring your vision to life efficiently and effectively.
           </motion.p>
@@ -77,28 +77,28 @@ export function ProcessSection() {
                 <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-primary/50 to-transparent -translate-y-1/2 z-0" />
               )}
 
-              <div className="relative bg-background/5 rounded-2xl p-8 border border-background/10 hover:border-primary/30 transition-colors group">
+              <div className="relative bg-white/5 rounded-2xl p-8 border border-white/10 hover:border-primary/30 transition-colors group">
                 {/* Step number */}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                     <item.icon className="w-7 h-7 text-primary-foreground" />
                   </div>
-                  <span className="text-5xl font-bold text-background/20 group-hover:text-primary/30 transition-colors">
+                  <span className="text-5xl font-bold text-white/20 group-hover:text-primary/30 transition-colors">
                     {item.step}
                   </span>
                 </div>
 
-                <h3 className="text-xl font-semibold text-background mb-3">
+                <h3 className="text-xl font-semibold text-white mb-3">
                   {item.title}
                 </h3>
-                <p className="text-background/70 leading-relaxed mb-6">
+                <p className="text-white/70 leading-relaxed mb-6">
                   {item.description}
                 </p>
 
                 {/* Items list */}
                 <ul className="space-y-2">
                   {item.items.map((listItem) => (
-                    <li key={listItem} className="flex items-center gap-2 text-sm text-background/60">
+                    <li key={listItem} className="flex items-center gap-2 text-sm text-white/60">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       {listItem}
                     </li>
