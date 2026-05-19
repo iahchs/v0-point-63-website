@@ -1,5 +1,5 @@
-// In-memory store for reviews (fallback when Supabase is not connected)
-// This will persist during the server session but reset on restart
+import fs from "fs"
+import path from "path"
 
 export interface Review {
   id: string
@@ -11,6 +11,9 @@ export interface Review {
   created_at: string
   updated_at: string
 }
+
+// Data file location
+const DATA_PATH = process.env.DATA_PATH || path.join(process.cwd(), "data", "reviews.json")
 
 // Default reviews data
 const defaultReviews: Review[] = [
@@ -46,46 +49,101 @@ const defaultReviews: Review[] = [
   },
 ]
 
-// Global store (persists during server runtime)
-let reviewsStore: Review[] = [...defaultReviews]
+// In-memory cache
+let reviewsCache: Review[] | null = null
+
+// Ensure data directory exists
+function ensureDataDir() {
+  const dir = path.dirname(DATA_PATH)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+}
+
+// Load reviews from file
+function loadReviews(): Review[] {
+  if (reviewsCache !== null) {
+    return reviewsCache
+  }
+
+  try {
+    ensureDataDir()
+    if (fs.existsSync(DATA_PATH)) {
+      const data = fs.readFileSync(DATA_PATH, "utf-8")
+      reviewsCache = JSON.parse(data)
+      return reviewsCache!
+    }
+  } catch (error) {
+    console.error("Error loading reviews:", error)
+  }
+
+  // Return defaults if file doesn't exist or error
+  reviewsCache = [...defaultReviews]
+  saveReviews(reviewsCache)
+  return reviewsCache
+}
+
+// Save reviews to file
+function saveReviews(reviews: Review[]) {
+  try {
+    ensureDataDir()
+    fs.writeFileSync(DATA_PATH, JSON.stringify(reviews, null, 2))
+    reviewsCache = reviews
+  } catch (error) {
+    console.error("Error saving reviews:", error)
+  }
+}
 
 export function getAllReviews(): Review[] {
-  return [...reviewsStore].sort((a, b) => 
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  const reviews = loadReviews()
+  return [...reviews].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   )
 }
 
 export function getReviewById(id: string): Review | undefined {
-  return reviewsStore.find(r => r.id === id)
+  const reviews = loadReviews()
+  return reviews.find((r) => r.id === id)
 }
 
-export function createReview(data: Omit<Review, "id" | "created_at" | "updated_at">): Review {
+export function createReview(
+  data: Omit<Review, "id" | "created_at" | "updated_at">
+): Review {
+  const reviews = loadReviews()
   const newReview: Review = {
     ...data,
     id: crypto.randomUUID(),
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }
-  reviewsStore.push(newReview)
+  reviews.push(newReview)
+  saveReviews(reviews)
   return newReview
 }
 
-export function updateReview(id: string, data: Partial<Omit<Review, "id" | "created_at" | "updated_at">>): Review | null {
-  const index = reviewsStore.findIndex(r => r.id === id)
+export function updateReview(
+  id: string,
+  data: Partial<Omit<Review, "id" | "created_at" | "updated_at">>
+): Review | null {
+  const reviews = loadReviews()
+  const index = reviews.findIndex((r) => r.id === id)
   if (index === -1) return null
-  
-  reviewsStore[index] = {
-    ...reviewsStore[index],
+
+  reviews[index] = {
+    ...reviews[index],
     ...data,
     updated_at: new Date().toISOString(),
   }
-  return reviewsStore[index]
+  saveReviews(reviews)
+  return reviews[index]
 }
 
 export function deleteReview(id: string): boolean {
-  const index = reviewsStore.findIndex(r => r.id === id)
+  const reviews = loadReviews()
+  const index = reviews.findIndex((r) => r.id === id)
   if (index === -1) return false
-  
-  reviewsStore.splice(index, 1)
+
+  reviews.splice(index, 1)
+  saveReviews(reviews)
   return true
 }
