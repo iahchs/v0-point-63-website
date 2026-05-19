@@ -50,7 +50,12 @@ export function CTASection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
+            <Button 
+              asChild 
+              size="lg" 
+              className="border-2 text-white hover:opacity-90 transition-all"
+              style={{ borderColor: '#8E5BBE', backgroundColor: '#8E5BBE' }}
+            >
               <Link href="/pricing">
                 View Pricing
               </Link>

@@ -12,7 +12,7 @@ const packages = [
   {
     name: "Basic",
     description: "Perfect for small projects and startups",
-    price: "Starting at $2,500",
+    price: "Starting at PHP 75,000",
     features: [
       "Single video production (up to 2 min)",
       "Basic 3D graphics package",
@@ -27,7 +27,7 @@ const packages = [
   {
     name: "Professional",
     description: "Ideal for growing brands and campaigns",
-    price: "Starting at $7,500",
+    price: "Starting at PHP 200,000",
     features: [
       "Multi-video production (up to 5 min each)",
       "Advanced 3D/CGI package",
@@ -65,31 +65,31 @@ const alaCarteServices = [
   {
     category: "Video Production",
     services: [
-      { name: "Commercial/Ad Production", price: "From $3,000" },
-      { name: "Corporate Video", price: "From $2,000" },
-      { name: "Music Video", price: "From $2,500" },
-      { name: "Event Coverage", price: "From $1,500" },
-      { name: "Drone Footage", price: "From $800" },
+      { name: "Commercial/Ad Production", price: "From PHP 90,000" },
+      { name: "Corporate Video", price: "From PHP 60,000" },
+      { name: "Music Video", price: "From PHP 75,000" },
+      { name: "Event Coverage", price: "From PHP 45,000" },
+      { name: "Drone Footage", price: "From PHP 24,000" },
     ],
   },
   {
     category: "3D & CGI",
     services: [
-      { name: "Product Visualization", price: "From $1,500" },
-      { name: "3D Environment", price: "From $3,000" },
-      { name: "Character Design", price: "From $2,500" },
-      { name: "Architectural Render", price: "From $2,000" },
-      { name: "VFX Integration", price: "From $1,000" },
+      { name: "Product Visualization", price: "From PHP 45,000" },
+      { name: "3D Environment", price: "From PHP 90,000" },
+      { name: "Character Design", price: "From PHP 75,000" },
+      { name: "Architectural Render", price: "From PHP 60,000" },
+      { name: "VFX Integration", price: "From PHP 30,000" },
     ],
   },
   {
     category: "Motion & Editing",
     services: [
-      { name: "Logo Animation", price: "From $500" },
-      { name: "Explainer Video", price: "From $1,500" },
-      { name: "Video Editing (per min)", price: "From $200" },
-      { name: "Color Grading", price: "From $300" },
-      { name: "Sound Design", price: "From $400" },
+      { name: "Logo Animation", price: "From PHP 15,000" },
+      { name: "Explainer Video", price: "From PHP 45,000" },
+      { name: "Video Editing (per min)", price: "From PHP 6,000" },
+      { name: "Color Grading", price: "From PHP 9,000" },
+      { name: "Sound Design", price: "From PHP 12,000" },
     ],
   },
 ]
