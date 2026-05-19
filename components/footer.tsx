@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin, Youtube } from "lucide-react"
 
 const footerLinks = {
@@ -31,9 +32,13 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">P</span>
-              </div>
+              <Image 
+                src="/images/point_63_logo.png" 
+                alt="Point 63 Logo" 
+                width={40} 
+                height={40}
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-xl font-bold tracking-tight text-background">
                 Point <span className="text-primary">63</span>
               </span>
@@ -112,9 +117,9 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary shrink-0" />
-                <a href="mailto:hello@point63.com" className="text-sm text-background/70 hover:text-primary transition-colors">
-                  hello@point63.com
+                <Mail className="w-5 h-5 shrink-0" style={{ color: '#8E5BBE' }} />
+                <a href="mailto:contact.point63@gmail.com" className="text-sm hover:text-primary transition-colors" style={{ color: '#8E5BBE' }}>
+                  contact.point63@gmail.com
                 </a>
               </li>
             </ul>

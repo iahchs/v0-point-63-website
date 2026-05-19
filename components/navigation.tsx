@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -39,10 +40,14 @@ export function Navigation() {
         <div className="flex h-16 items-center justify-between lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">P</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <Image 
+                src="/images/point_63_logo.png" 
+                alt="Point 63 Logo" 
+                width={40} 
+                height={40}
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-xl font-bold tracking-tight">
                 Point <span className="text-primary">63</span>
               </span>

@@ -19,8 +19,9 @@ const contactDetails = [
   {
     icon: Mail,
     label: "Email",
-    value: "hello@point63.com",
-    href: "mailto:hello@point63.com",
+    value: "contact.point63@gmail.com",
+    href: "mailto:contact.point63@gmail.com",
+    highlight: true,
   },
   {
     icon: Clock,
@@ -51,15 +52,22 @@ export function ContactInfo() {
         <div className="space-y-6 mb-10">
           {contactDetails.map((detail) => (
             <div key={detail.label} className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <detail.icon className="w-5 h-5 text-primary" />
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: 'highlight' in detail && detail.highlight ? 'rgba(142, 91, 190, 0.15)' : 'rgba(126, 211, 90, 0.1)' }}
+              >
+                <detail.icon 
+                  className="w-5 h-5" 
+                  style={{ color: 'highlight' in detail && detail.highlight ? '#8E5BBE' : undefined }}
+                />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">{detail.label}</p>
                 {detail.href ? (
                   <a
                     href={detail.href}
-                    className="font-medium text-foreground hover:text-primary transition-colors"
+                    className="font-medium transition-colors"
+                    style={{ color: 'highlight' in detail && detail.highlight ? '#8E5BBE' : undefined }}
                   >
                     {detail.value}
                   </a>
@@ -98,11 +106,12 @@ export function ContactInfo() {
           For urgent inquiries, reach out directly via phone or email. We typically respond within a few hours during business hours.
         </p>
         <a
-          href="mailto:hello@point63.com"
-          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+          href="mailto:contact.point63@gmail.com"
+          className="inline-flex items-center gap-2 text-sm font-medium hover:underline"
+          style={{ color: '#8E5BBE' }}
         >
           <Mail className="w-4 h-4" />
-          hello@point63.com
+          contact.point63@gmail.com
         </a>
       </div>
     </motion.div>

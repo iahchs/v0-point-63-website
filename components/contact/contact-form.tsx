@@ -25,11 +25,11 @@ const services = [
 ]
 
 const budgetRanges = [
-  "Under $2,500",
-  "$2,500 - $5,000",
-  "$5,000 - $10,000",
-  "$10,000 - $25,000",
-  "$25,000+",
+  "Under PHP 75,000",
+  "PHP 75,000 - PHP 150,000",
+  "PHP 150,000 - PHP 300,000",
+  "PHP 300,000 - PHP 750,000",
+  "PHP 750,000+",
   "Not sure yet",
 ]
 
@@ -179,6 +179,18 @@ export function ContactForm() {
             </>
           )}
         </Button>
+
+        <div className="text-center pt-4">
+          <p className="text-sm text-muted-foreground mb-2">Or email us directly:</p>
+          <a
+            href="mailto:contact.point63@gmail.com"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
+            style={{ color: '#8E5BBE', backgroundColor: 'rgba(142, 91, 190, 0.1)' }}
+          >
+            <Send className="h-4 w-4" />
+            contact.point63@gmail.com
+          </a>
+        </div>
       </form>
     </motion.div>
   )

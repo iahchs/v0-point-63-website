@@ -11,8 +11,10 @@ import {
   Plus, 
   Star,
   MessageSquareQuote,
-  Loader2
+  Loader2,
+  RefreshCw
 } from "lucide-react"
+import { toast } from "sonner"
 import { ReviewForm } from "./review-form"
 import { ReviewCard } from "./review-card"
 
@@ -59,37 +61,54 @@ export function AdminDashboard() {
   }
 
   const handleSave = async (review: Omit<Review, "id" | "created_at" | "updated_at">) => {
-    if (editingReview) {
-      // Update existing review
-      const res = await fetch(`/api/reviews/${editingReview.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(review),
-      })
-      if (res.ok) {
-        fetchReviews()
-        setEditingReview(null)
-        setShowForm(false)
+    try {
+      if (editingReview) {
+        // Update existing review
+        const res = await fetch(`/api/reviews/${editingReview.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(review),
+        })
+        if (res.ok) {
+          fetchReviews()
+          setEditingReview(null)
+          setShowForm(false)
+          toast.success("Review updated successfully")
+        } else {
+          toast.error("Failed to update review")
+        }
+      } else {
+        // Create new review
+        const res = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(review),
+        })
+        if (res.ok) {
+          fetchReviews()
+          setShowForm(false)
+          toast.success("Review added successfully")
+        } else {
+          toast.error("Failed to add review")
+        }
       }
-    } else {
-      // Create new review
-      const res = await fetch("/api/reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(review),
-      })
-      if (res.ok) {
-        fetchReviews()
-        setShowForm(false)
-      }
+    } catch {
+      toast.error("An error occurred")
     }
   }
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this review?")) {
-      const res = await fetch(`/api/reviews/${id}`, { method: "DELETE" })
-      if (res.ok) {
-        fetchReviews()
+      try {
+        const res = await fetch(`/api/reviews/${id}`, { method: "DELETE" })
+        if (res.ok) {
+          fetchReviews()
+          toast.success("Review deleted successfully")
+        } else {
+          toast.error("Failed to delete review")
+        }
+      } catch {
+        toast.error("An error occurred")
       }
     }
   }
@@ -125,15 +144,31 @@ export function AdminDashboard() {
               <div className="h-6 w-px bg-border" />
               <h1 className="text-lg font-semibold">Admin Dashboard</h1>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {
+                  setIsLoading(true)
+                  fetchReviews()
+                  toast.success("Reviews refreshed")
+                }}
+                className="gap-2"
+                disabled={isLoading}
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleLogout}
+                className="gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
