@@ -1,6 +1,26 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
 import { isAdminAuthenticated } from "@/lib/admin-auth"
+import { getReviewById, updateReview, deleteReview } from "@/lib/reviews-store"
+
+// GET - Fetch a single review
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const review = getReviewById(id)
+
+    if (!review) {
+      return NextResponse.json({ error: "Review not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(review)
+  } catch (error) {
+    console.error("Error fetching review:", error)
+    return NextResponse.json({ error: "Failed to fetch review" }, { status: 500 })
+  }
+}
 
 // PUT - Update a review (admin only)
 export async function PUT(
@@ -31,29 +51,21 @@ export async function PUT(
       )
     }
 
-    const supabase = await createClient()
-    
-    const { data, error } = await supabase
-      .from("reviews")
-      .update({
-        client_name,
-        client_company: client_company || null,
-        client_role: client_role || null,
-        content,
-        rating,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single()
+    const updatedReview = updateReview(id, {
+      client_name,
+      client_company: client_company || null,
+      client_role: client_role || null,
+      content,
+      rating,
+    })
 
-    if (error) {
-      console.error("Error updating review:", error)
-      return NextResponse.json({ error: "Failed to update review" }, { status: 500 })
+    if (!updatedReview) {
+      return NextResponse.json({ error: "Review not found" }, { status: 404 })
     }
 
-    return NextResponse.json(data)
-  } catch {
+    return NextResponse.json(updatedReview)
+  } catch (error) {
+    console.error("Error updating review:", error)
     return NextResponse.json({ error: "Failed to update review" }, { status: 500 })
   }
 }
@@ -70,20 +82,15 @@ export async function DELETE(
     }
 
     const { id } = await params
-    const supabase = await createClient()
-    
-    const { error } = await supabase
-      .from("reviews")
-      .delete()
-      .eq("id", id)
+    const deleted = deleteReview(id)
 
-    if (error) {
-      console.error("Error deleting review:", error)
-      return NextResponse.json({ error: "Failed to delete review" }, { status: 500 })
+    if (!deleted) {
+      return NextResponse.json({ error: "Review not found" }, { status: 404 })
     }
 
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (error) {
+    console.error("Error deleting review:", error)
     return NextResponse.json({ error: "Failed to delete review" }, { status: 500 })
   }
 }
