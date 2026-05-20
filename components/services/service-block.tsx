@@ -81,6 +81,11 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
                 muted
                 loop
                 playsInline
+                crossOrigin="anonymous"
+                onLoadStart={() => console.log("[v0] Video loading:", image)}
+                onCanPlay={() => console.log("[v0] Video can play:", image)}
+                onError={(e) => console.log("[v0] Video error:", image, e)}
+                onPlay={() => console.log("[v0] Video playing:", image)}
               >
                 <source src={image} type="video/mp4" />
                 Your browser does not support the video tag.
