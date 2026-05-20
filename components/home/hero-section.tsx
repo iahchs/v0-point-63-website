@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play, Sparkles } from "lucide-react"
+import { ArrowRight, Sparkles } from "lucide-react"
 import { motion } from "framer-motion"
 
 export function HeroSection() {
@@ -70,20 +70,24 @@ export function HeroSection() {
             className="relative lg:pl-8"
           >
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-              {/* Video/Image placeholder with gradient */}
+              {/* Video element */}
+              <video
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              >
+                <source src="/3d graphics.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+
+              {/* Gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg animate-pulse-glow">
-                  <Play className="w-8 h-8 text-primary ml-1" fill="currentColor" />
-                </div>
-              </div>
               
               {/* Decorative frame elements */}
               <div className="absolute top-4 left-4 w-20 h-20 border-l-2 border-t-2 border-primary/50 rounded-tl-lg" />
               <div className="absolute bottom-4 right-4 w-20 h-20 border-r-2 border-b-2 border-primary/50 rounded-br-lg" />
-              
-              {/* Background image simulation */}
-              <div className="absolute inset-0 bg-foreground/5" />
             </div>
 
             {/* Floating badge */}

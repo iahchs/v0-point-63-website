@@ -15,7 +15,7 @@ interface ServiceBlockProps {
   index: number
 }
 
-export function ServiceBlock({ id, title, description, features, reverse, index }: ServiceBlockProps) {
+export function ServiceBlock({ id, title, description, features, image, reverse, index }: ServiceBlockProps) {
   return (
     <section id={id} className="py-12 lg:py-20 scroll-mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -73,39 +73,30 @@ export function ServiceBlock({ id, title, description, features, reverse, index 
             transition={{ delay: 0.2 }}
             className={reverse ? "lg:order-1" : ""}
           >
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-xl">
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-xl group">
+              {/* Video element */}
+              <video
+                className="relative w-full h-full object-cover z-10"
+                autoPlay
+                muted
+                loop
+                playsInline
+              >
+                <source src={image} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+
               {/* Gradient overlay */}
-              <div className={`absolute inset-0 ${
+              <div className={`absolute inset-0 z-20 ${
                 index === 0 ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" :
                 index === 1 ? "bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent" :
                 index === 2 ? "bg-gradient-to-br from-accent/20 via-accent/10 to-transparent" :
                 "bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent"
               }`} />
               
-              {/* Grid pattern */}
-              <div 
-                className="absolute inset-0 opacity-10"
-                style={{
-                  backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-                  backgroundSize: "30px 30px"
-                }}
-              />
-
-              {/* Service icon/indicator */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className={`w-20 h-20 rounded-2xl ${
-                  index === 0 ? "bg-primary" :
-                  index === 1 ? "bg-secondary" :
-                  index === 2 ? "bg-accent" :
-                  "bg-primary"
-                } flex items-center justify-center shadow-lg`}>
-                  <span className="text-white font-bold text-2xl">0{index + 1}</span>
-                </div>
-              </div>
-
               {/* Decorative frame */}
-              <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-primary/30 rounded-tl-lg" />
-              <div className="absolute bottom-4 right-4 w-16 h-16 border-r-2 border-b-2 border-primary/30 rounded-br-lg" />
+              <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-primary/30 rounded-tl-lg z-30" />
+              <div className="absolute bottom-4 right-4 w-16 h-16 border-r-2 border-b-2 border-primary/30 rounded-br-lg z-30" />
             </div>
           </motion.div>
         </div>

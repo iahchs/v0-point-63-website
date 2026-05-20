@@ -22,7 +22,7 @@ const services = [
       "Event Coverage",
       "Drone Videography",
     ],
-    image: "/services/Video-Shoot.mp4",
+    image: "/Video-Shoot.mp4",
     reverse: false,
   },
   {
@@ -37,7 +37,7 @@ const services = [
       "Product Rendering",
       "VFX Integration",
     ],
-    image: "/services/3d graphics.mp4",
+    image: "/3d graphics.mp4",
     reverse: true,
   },
   {
@@ -52,7 +52,7 @@ const services = [
       "Infographic Animation",
       "Broadcast Graphics",
     ],
-    image: "/services/motion.mp4",
+    image: "/motion.mp4",
     reverse: false,
   },
   {
@@ -67,7 +67,7 @@ const services = [
       "Format Conversion & Export",
       "Revision Management",
     ],
-    image: "/services/Commercial-editing.mp4",
+    image: "/Commercial-editing.mp4",
     reverse: true,
   },
 ]
