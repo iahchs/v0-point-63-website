@@ -15,7 +15,7 @@ interface ServiceBlockProps {
   index: number
 }
 
-export function ServiceBlock({ id, title, description, features, reverse, index }: ServiceBlockProps) {
+export function ServiceBlock({ id, title, description, features, image, reverse, index }: ServiceBlockProps) {
   return (
     <section id={id} className="py-12 lg:py-20 scroll-mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
