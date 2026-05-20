@@ -76,7 +76,7 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-xl group">
               {/* Video element */}
               <video
-                className="w-full h-full object-cover"
+                className="relative w-full h-full object-cover z-10"
                 autoPlay
                 muted
                 loop
@@ -87,7 +87,7 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
               </video>
 
               {/* Gradient overlay */}
-              <div className={`absolute inset-0 ${
+              <div className={`absolute inset-0 z-20 ${
                 index === 0 ? "bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" :
                 index === 1 ? "bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent" :
                 index === 2 ? "bg-gradient-to-br from-accent/20 via-accent/10 to-transparent" :
@@ -95,8 +95,8 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
               }`} />
               
               {/* Decorative frame */}
-              <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-primary/30 rounded-tl-lg" />
-              <div className="absolute bottom-4 right-4 w-16 h-16 border-r-2 border-b-2 border-primary/30 rounded-br-lg" />
+              <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-primary/30 rounded-tl-lg z-30" />
+              <div className="absolute bottom-4 right-4 w-16 h-16 border-r-2 border-b-2 border-primary/30 rounded-br-lg z-30" />
             </div>
           </motion.div>
         </div>
