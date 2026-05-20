@@ -81,6 +81,7 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
                 muted
                 loop
                 playsInline
+                crossOrigin="anonymous"
               >
                 <source src={image} type="video/mp4" />
                 Your browser does not support the video tag.
