@@ -41,11 +41,36 @@ export function ContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+    try {
+      const formData = new FormData(e.currentTarget)
+      const data = {
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string || '',
+        service: formData.get('service') as string,
+        budget: formData.get('budget') as string || '',
+        message: formData.get('message') as string,
+      }
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send email')
+      }
+
+      setIsSubmitting(false)
+      setIsSubmitted(true)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setIsSubmitting(false)
+      alert('Failed to send your message. Please try again or email us directly.')
+    }
   }
 
   if (isSubmitted) {
