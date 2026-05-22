@@ -14,6 +14,15 @@ interface ContactFormData {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is set
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not set');
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
+      );
+    }
+
     const body: ContactFormData = await request.json();
 
     // Validate required fields
@@ -48,17 +57,22 @@ export async function POST(request: NextRequest) {
       <p><em>This inquiry was submitted through your Point 63 website contact form.</em></p>
     `;
 
+    console.log('[v0] Sending email to: contact.point63@gmail.com');
+    console.log('[v0] From:', body.email);
+
     // Send email to your business email
+    // Note: In Resend test mode, emails can only be sent to the verified address
+    // Change 'chuajared285@gmail.com' to your Resend account's verified email
     const response = await resend.emails.send({
       from: 'Point 63 <onboarding@resend.dev>', // Use Resend's default domain for now
-      to: 'contact.point63@gmail.com', // Your business email
+      to: 'chuajared285@gmail.com', // In test mode, use the Resend account email. Update to your verified domain email when you verify a domain.
       replyTo: body.email, // Reply goes to client's email
       subject: `New Project Inquiry: ${body.service}`,
       html: emailContent,
     });
 
     if (response.error) {
-      console.error('Resend error:', response.error);
+      console.error('[v0] Resend error:', response.error);
       return NextResponse.json(
         { error: 'Failed to send email' },
         { status: 500 }
@@ -84,6 +98,8 @@ export async function POST(request: NextRequest) {
       <p>Best regards,<br>Point 63 Team</p>
     `;
 
+    console.log('[v0] Sending confirmation email to:', body.email);
+
     await resend.emails.send({
       from: 'Point 63 <onboarding@resend.dev>',
       to: body.email,
@@ -96,7 +112,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('[v0] Error sending email:', error);
     return NextResponse.json(
       { error: 'An error occurred while sending the email' },
       { status: 500 }
