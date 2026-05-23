@@ -36,16 +36,45 @@ const budgetRanges = [
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [service, setService] = useState("")
+  const [budget, setBudget] = useState("")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+    try {
+      const formData = new FormData(e.currentTarget)
+      const data = {
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string || '',
+        service: service,
+        budget: budget,
+        message: formData.get('message') as string,
+      }
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const responseData = await response.json()
+
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Failed to send email')
+      }
+
+      setIsSubmitting(false)
+      setIsSubmitted(true)
+    } catch (error) {
+      console.error('[v0] Error submitting form:', error)
+      setIsSubmitting(false)
+      alert('Failed to send your message. Please try again or email us directly.')
+    }
   }
 
   if (isSubmitted) {
@@ -118,14 +147,14 @@ export function ContactForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="service">Service Interested In *</Label>
-            <Select name="service" required>
+            <Select value={service} onValueChange={setService} required>
               <SelectTrigger className="bg-muted/30 border-border focus:border-primary">
                 <SelectValue placeholder="Select a service" />
               </SelectTrigger>
               <SelectContent>
-                {services.map((service) => (
-                  <SelectItem key={service} value={service.toLowerCase().replace(/\s+/g, "-")}>
-                    {service}
+                {services.map((svc) => (
+                  <SelectItem key={svc} value={svc.toLowerCase().replace(/\s+/g, "-")}>
+                    {svc}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -135,7 +164,7 @@ export function ContactForm() {
 
         <div className="space-y-2">
           <Label htmlFor="budget">Budget Range</Label>
-          <Select name="budget">
+          <Select value={budget} onValueChange={setBudget}>
             <SelectTrigger className="bg-muted/30 border-border focus:border-primary">
               <SelectValue placeholder="Select your budget range" />
             </SelectTrigger>
