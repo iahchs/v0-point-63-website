@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: 'Point 63 is a Manila-based multimedia production studio specializing in video production, 3D/CGI, motion graphics, and post-production. Bring your vision to life with our expert team.',
   keywords: ['video production', '3D graphics', 'CGI', 'motion graphics', 'post-production', 'Manila', 'Philippines', 'multimedia'],
   authors: [{ name: 'Point 63' }],
+  icons: { icon: "/images/point-63-logo.png", apple: "/images/point-63-logo.png" },
   openGraph: {
     title: 'Point 63 | Premium Multimedia Production',
     description: 'Manila-based multimedia production studio specializing in video production, 3D/CGI, motion graphics, and post-production.',
