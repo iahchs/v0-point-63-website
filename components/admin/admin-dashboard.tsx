@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner"
 import { ReviewForm } from "./review-form"
 import { ReviewCard } from "./review-card"
+import { ServiceManager } from "./service-manager"
 
 export interface Review {
   id: string
@@ -219,6 +220,8 @@ export function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        <ServiceManager />
 
         {/* Reviews Section */}
         <Card>
