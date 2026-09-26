@@ -10,8 +10,8 @@ export const metadata = {
   description: "Explore Point 63's comprehensive multimedia production services including video production, 3D graphics, motion graphics, and post-production.",
 }
 
-export default function ServicesPage() {
-  const services = getAllServices().map((service, index) => ({ ...service, image: service.videoUrl, reverse: index % 2 === 1 }))
+export default async function ServicesPage() {
+  const services = (await getAllServices()).map((service, index) => ({ ...service, image: service.videoUrl, reverse: index % 2 === 1 }))
   return (
     <>
       <Navigation />
