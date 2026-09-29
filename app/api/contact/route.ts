@@ -1,8 +1,6 @@
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 interface ContactFormData {
   name: string;
   email: string;
@@ -15,7 +13,8 @@ interface ContactFormData {
 export async function POST(request: NextRequest) {
   try {
     // Check if API key is set
-    if (!process.env.RESEND_API_KEY) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
       console.error('RESEND_API_KEY is not set');
       return NextResponse.json(
         { error: 'Email service not configured' },
@@ -23,6 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const resend = new Resend(apiKey);
     const body: ContactFormData = await request.json();
 
     // Validate required fields
