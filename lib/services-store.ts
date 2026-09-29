@@ -9,11 +9,18 @@ export interface Service {
   sortOrder: number
 }
 
-const supabase = createClient(
-  process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } },
-)
+function getSupabase() {
+  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY
+
+  if (!url || !key) {
+    throw new Error("Supabase server environment variables are not configured")
+  }
+
+  return createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
+}
 
 const defaults: Service[] = [
   { id: "video-photo", title: "Video & Photo Shoot", description: "Professional video production and photography services for commercials, corporate videos, music videos, and creative content. We handle everything from concept to final delivery.", features: ["Commercial & Advertisement Production", "Corporate Video Production", "Music Video Production", "Product Photography", "Event Coverage", "Drone Videography"], videoUrl: "/Video-Shoot.mp4", sortOrder: 0 },
@@ -27,6 +34,7 @@ function fromRow(row: Record<string, unknown>): Service {
 }
 
 export async function getAllServices(): Promise<Service[]> {
+  const supabase = getSupabase()
   const { data, error } = await supabase.from("services").select("id,title,description,features,video_url,sort_order").order("sort_order", { ascending: true })
   if (error) throw new Error("Unable to load services")
   if (!data?.length) {
@@ -38,6 +46,7 @@ export async function getAllServices(): Promise<Service[]> {
 }
 
 export async function createService(data: Omit<Service, "id">) {
+  const supabase = getSupabase()
   const service = { id: crypto.randomUUID(), ...data }
   const { data: row, error } = await supabase.from("services").insert({ id: service.id, title: service.title, description: service.description, features: service.features, video_url: service.videoUrl, sort_order: service.sortOrder }).select("id,title,description,features,video_url,sort_order").single()
   if (error) throw new Error("Unable to create service")
@@ -45,6 +54,7 @@ export async function createService(data: Omit<Service, "id">) {
 }
 
 export async function updateService(id: string, data: Partial<Omit<Service, "id">>) {
+  const supabase = getSupabase()
   const update = { ...(data.title !== undefined ? { title: data.title } : {}), ...(data.description !== undefined ? { description: data.description } : {}), ...(data.features !== undefined ? { features: data.features } : {}), ...(data.videoUrl !== undefined ? { video_url: data.videoUrl } : {}), ...(data.sortOrder !== undefined ? { sort_order: data.sortOrder } : {}), updated_at: new Date().toISOString() }
   const { data: row, error } = await supabase.from("services").update(update).eq("id", id).select("id,title,description,features,video_url,sort_order").maybeSingle()
   if (error) throw new Error("Unable to update service")
@@ -52,6 +62,7 @@ export async function updateService(id: string, data: Partial<Omit<Service, "id"
 }
 
 export async function deleteService(id: string) {
+  const supabase = getSupabase()
   const { data, error } = await supabase.from("services").delete().eq("id", id).select("id")
   if (error) throw new Error("Unable to delete service")
   return Boolean(data?.length)
