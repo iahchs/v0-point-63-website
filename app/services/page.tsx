@@ -1,26 +1,57 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { ServicesHero } from "@/components/services/services-hero"
 import { ServiceBlock } from "@/components/services/service-block"
 import { CTASection } from "@/components/home/cta-section"
-import { getAllServices } from "@/lib/services-store"
 
-export const metadata = {
-  title: "Our Services | Point 63",
-  description: "Explore Point 63's comprehensive multimedia production services including video production, 3D graphics, motion graphics, and post-production.",
+type Service = {
+  id: string
+  title: string
+  description: string
+  features: string[]
+  video_url: string
+  sort_order: number
 }
 
 export default function ServicesPage() {
-  const services = getAllServices().map((service, index) => ({ ...service, image: service.videoUrl, reverse: index % 2 === 1 }))
+  const [services, setServices] = useState<Service[]>([])
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    fetch("/api/services")
+      .then(async (response) => {
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || "Unable to load services")
+        return data
+      })
+      .then(setServices)
+      .catch((err) => setError(err instanceof Error ? err.message : "Unable to load services"))
+  }, [])
+
   return (
     <>
       <Navigation />
       <main>
         <ServicesHero />
         <div className="py-12 lg:py-20 bg-card">
-          {services.map((service, index) => (
-            <ServiceBlock key={service.id} {...service} index={index} />
-          ))}
+          {error ? (
+            <p className="mx-auto max-w-7xl px-4 text-center text-destructive">{error}</p>
+          ) : services.length === 0 ? (
+            <p className="mx-auto max-w-7xl px-4 text-center text-muted-foreground">Loading services...</p>
+          ) : (
+            services.map((service, index) => (
+              <ServiceBlock
+                key={service.id}
+                {...service}
+                image={service.video_url}
+                reverse={index % 2 === 1}
+                index={index}
+              />
+            ))
+          )}
         </div>
         <CTASection />
       </main>
