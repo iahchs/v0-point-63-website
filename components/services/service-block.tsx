@@ -11,11 +11,12 @@ interface ServiceBlockProps {
   description: string
   features: string[]
   image: string
+  thumbnail_url?: string | null
   reverse: boolean
   index: number
 }
 
-export function ServiceBlock({ id, title, description, features, image, reverse, index }: ServiceBlockProps) {
+export function ServiceBlock({ id, title, description, features, image, thumbnail_url, reverse, index }: ServiceBlockProps) {
   return (
     <section id={id} className="py-12 lg:py-20 scroll-mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -81,6 +82,7 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
                 muted
                 loop
                 playsInline
+                poster={thumbnail_url ?? undefined}
                 crossOrigin="anonymous"
               >
                 <source src={image} type="video/mp4" />
