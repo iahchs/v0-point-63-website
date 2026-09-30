@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ServiceManager } from "@/components/admin/service-manager"
 
 type Inquiry={id:string;name:string;email:string;phone:string|null;service:string;budget:string|null;message:string;status:string;admin_reply:string|null;replied_at:string|null;created_at:string}
 type Booking={id:string;user_id:string;service_id:string;scheduled_start:string;scheduled_end:string;status:string;notes:string|null;created_at:string;services?:{title:string}|{title:string}[]|null}
@@ -45,6 +46,7 @@ export default function AdminPage(){
     {bookings.map(x=>{const service=Array.isArray(x.services)?x.services[0]?.title:x.services?.title;return <div key={x.id} className="rounded-lg border p-4"><div className="flex justify-between gap-3"><span className="font-medium">{service||x.service_id}</span><span className="text-xs capitalize text-muted-foreground">{x.status}</span></div><p className="text-sm text-muted-foreground mt-1">{new Date(x.scheduled_start).toLocaleString()}</p><p className="text-xs text-muted-foreground mt-1">Customer: {x.user_id}</p></div>})}
    </CardContent></Card>
   </section>
+  <ServiceManager />
   {selected&&<Card><CardHeader><CardTitle>Inquiry from {selected.name}</CardTitle></CardHeader><CardContent className="space-y-4">
    <div className="grid sm:grid-cols-2 gap-3 text-sm"><p><strong>Email:</strong> {selected.email}</p><p><strong>Phone:</strong> {selected.phone||"Not provided"}</p><p><strong>Service:</strong> {selected.service}</p><p><strong>Budget:</strong> {selected.budget||"Not provided"}</p></div>
    <div className="rounded-lg border p-4 whitespace-pre-wrap text-sm">{selected.message}</div>
