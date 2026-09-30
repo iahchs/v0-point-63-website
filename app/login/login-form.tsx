@@ -16,7 +16,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const nextPath = searchParams.get("next") || "/book"
+  const nextPath = searchParams.get("next") || "/contact"
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -38,7 +38,7 @@ export default function LoginForm() {
       setLoading(false)
       return
     }
-    router.push(nextPath.startsWith("/") ? nextPath : "/book")
+    router.push(nextPath.startsWith("/") ? nextPath : "/contact")
     router.refresh()
   }
 

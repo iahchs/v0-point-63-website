@@ -37,7 +37,7 @@ export function ContactForm() {
     if (form.type === "booking" && (!form.date || !form.time)) return setError("Bookings require a preferred date and start time.")
     if (form.type === "booking") {
       const auth = await fetch("/api/auth/me")
-      if (!auth.ok) { sessionStorage.setItem("point63-request", JSON.stringify(form)); router.push("/login?next=/book"); return }
+      if (!auth.ok) { sessionStorage.setItem("point63-request", JSON.stringify(form)); router.push("/login?next=/contact"); return }
     }
     setSaving(true)
     const scheduledStart = form.date && form.time ? new Date(`${form.date}T${form.time}`).toISOString() : null
