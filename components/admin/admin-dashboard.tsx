@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import { ReviewForm } from "./review-form"
 import { ReviewCard } from "./review-card"
 import { ServiceManager } from "./service-manager"
+import { VideoManager } from "./video-manager"
 
 export interface Review {
   id: string
@@ -222,6 +223,7 @@ export function AdminDashboard() {
         </div>
 
         <ServiceManager />
+        <VideoManager />
 
         {/* Reviews Section */}
         <Card>

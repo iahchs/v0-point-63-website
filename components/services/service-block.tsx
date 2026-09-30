@@ -11,6 +11,7 @@ interface ServiceBlockProps {
   description: string
   features: string[]
   image: string
+  thumbnail_url?: string | null
   reverse: boolean
   index: number
 }
@@ -81,6 +82,7 @@ export function ServiceBlock({ id, title, description, features, image, reverse,
                 muted
                 loop
                 playsInline
+                poster={thumbnail_url ?? undefined}
                 crossOrigin="anonymous"
               >
                 <source src={image} type="video/mp4" />
