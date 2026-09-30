@@ -6,21 +6,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Pencil, Plus, Save, Trash2, Upload, X } from "lucide-react"
+import { Pencil, Save, X } from "lucide-react"
 import { toast } from "sonner"
-import type { Service } from "@/lib/services-store"
 
-const empty = { title: "", description: "", features: "", videoUrl: "" }
+type Service = { id: string; title: string; description: string; features: string[]; video_url: string; price_note: string | null; sort_order: number; active: boolean }
+type Form = Omit<Service, "id" | "features" | "sort_order"> & { features: string; sort_order: string }
+const empty: Form = { title: "", description: "", features: "", video_url: "", price_note: "", active: true, sort_order: "0" }
+
 export function ServiceManager() {
-  const [services, setServices] = useState<Service[]>([]); const [editing, setEditing] = useState<Service | null>(null); const [form, setForm] = useState(empty); const [uploading, setUploading] = useState(false)
-  const load = async () => { const response = await fetch("/api/services"); if (response.ok) setServices(await response.json()) }
-  useEffect(() => { load() }, [])
-  const start = (service?: Service) => { setEditing(service ?? null); setForm(service ? { title: service.title, description: service.description, features: service.features.join("\n"), videoUrl: service.videoUrl } : empty) }
-  const upload = async (file: File) => { setUploading(true); const body = new FormData(); body.append("file", file); const response = await fetch("/api/services/upload", { method: "POST", body }); setUploading(false); if (!response.ok) return toast.error("Video upload failed"); const data = await response.json(); setForm((current) => ({ ...current, videoUrl: data.url })); toast.success("Video uploaded") }
-  const save = async () => { const payload = { ...(editing ? { id: editing.id } : {}), title: form.title, description: form.description, videoUrl: form.videoUrl, features: form.features.split("\n").map((item) => item.trim()).filter(Boolean), ...(editing ? {} : { sortOrder: services.length }) }; const response = await fetch("/api/services", { method: editing ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }); if (!response.ok) return toast.error("Could not save service"); await load(); setEditing(null); setForm(empty); toast.success(editing ? "Service updated" : "Service added") }
-  const remove = async (id: string) => { if (!confirm("Delete this service?")) return; const response = await fetch("/api/services", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); if (response.ok) { await load(); toast.success("Service deleted") } }
-  return <Card className="mt-8"><CardHeader className="flex flex-row items-center justify-between gap-4"><div><CardTitle>Services & videos</CardTitle><CardDescription>Edit service content or upload a new service video.</CardDescription></div><Button onClick={() => start()}><Plus data-icon="inline-start" /> Add service</Button></CardHeader><CardContent className="flex flex-col gap-4">
-    {(editing || form.title) && <div className="rounded-lg border bg-muted/30 p-4 flex flex-col gap-4"><div className="flex items-center justify-between"><h3 className="font-semibold">{editing ? "Edit service" : "New service"}</h3><Button variant="ghost" size="icon" onClick={() => { setEditing(null); setForm(empty) }}><X /></Button></div><Input placeholder="Service title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /><Textarea placeholder="Description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /><Textarea placeholder="Features, one per line" value={form.features} onChange={(event) => setForm({ ...form, features: event.target.value })} /><div className="flex flex-wrap items-center gap-3"><Input type="file" accept="video/*" className="max-w-sm" disabled={uploading} onChange={(event) => event.target.files?.[0] && upload(event.target.files[0])} />{uploading && <Badge variant="secondary">Uploading...</Badge>}{form.videoUrl && <Badge variant="outline">Video ready</Badge>}</div><Button onClick={save} disabled={!form.title || !form.description || !form.videoUrl}><Save data-icon="inline-start" /> Save service</Button></div>}
-    {services.map((service) => <div key={service.id} className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center"><video src={service.videoUrl} muted loop autoPlay playsInline className="h-24 w-full rounded-md object-cover sm:w-40" /><div className="min-w-0 flex-1"><p className="font-semibold">{service.title}</p><p className="truncate text-sm text-muted-foreground">{service.description}</p><Badge variant="secondary" className="mt-2">{service.features.length} features</Badge></div><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => start(service)}><Pencil data-icon="inline-start" /> Edit</Button><Button variant="ghost" size="icon" onClick={() => remove(service.id)} aria-label={`Delete ${service.title}`}><Trash2 /></Button></div></div>)}
+  const [services, setServices] = useState<Service[]>([])
+  const [editing, setEditing] = useState<Service | null>(null)
+  const [form, setForm] = useState<Form>(empty)
+  const [loading, setLoading] = useState(true)
+
+  async function load() {
+    const response = await fetch("/api/admin/services", { cache: "no-store" })
+    if (response.status === 401) return (window.location.href = "/login?next=/admin")
+    if (!response.ok) return toast.error("Unable to load services")
+    setServices(await response.json())
+    setLoading(false)
+  }
+  useEffect(() => { void load() }, [])
+  function start(service: Service) {
+    setEditing(service)
+    setForm({ title: service.title, description: service.description, features: service.features.join("\n"), video_url: service.video_url, price_note: service.price_note ?? "", active: service.active, sort_order: String(service.sort_order) })
+  }
+  async function save() {
+    if (!editing) return
+    const response = await fetch("/api/admin/services", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editing.id, ...form, features: form.features.split("\n").map((item) => item.trim()).filter(Boolean), sort_order: Number(form.sort_order) }) })
+    if (!response.ok) return toast.error("Could not save service")
+    await load(); setEditing(null); toast.success("Service updated")
+  }
+  if (loading) return <Card className="mt-8"><CardContent className="p-6 text-sm text-muted-foreground">Loading services...</CardContent></Card>
+  return <Card className="mt-8"><CardHeader><CardTitle>Services</CardTitle><CardDescription>Manage the four services shown across the website. Services are deactivated instead of deleted.</CardDescription></CardHeader><CardContent className="flex flex-col gap-4">
+    {editing && <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4"><div className="flex items-center justify-between"><h3 className="font-semibold">Edit service</h3><Button variant="ghost" size="icon" onClick={() => setEditing(null)} aria-label="Close editor"><X /></Button></div><Input aria-label="Service title" placeholder="Service title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /><Textarea aria-label="Description" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /><Textarea aria-label="Features" placeholder="Features, one per line" value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} /><Input aria-label="Price note" placeholder="Price note" value={form.price_note ?? ""} onChange={(e) => setForm({ ...form, price_note: e.target.value })} /><Input aria-label="Video URL" placeholder="Video URL" value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} /><div className="flex flex-wrap gap-3"><Input aria-label="Display order" type="number" min="0" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} /><Button variant={form.active ? "default" : "outline"} onClick={() => setForm({ ...form, active: !form.active })}>{form.active ? "Active" : "Inactive"}</Button></div><Button onClick={save} disabled={!form.title.trim() || !form.description.trim()}><Save data-icon="inline-start" /> Save service</Button></div>}
+    {services.map((service) => <div key={service.id} className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center"><video src={service.video_url} muted loop autoPlay playsInline className="h-24 w-full rounded-md object-cover sm:w-40" /><div className="min-w-0 flex-1"><p className="font-semibold">{service.title}</p><p className="truncate text-sm text-muted-foreground">{service.description}</p><div className="mt-2 flex gap-2"><Badge variant={service.active ? "secondary" : "outline"}>{service.active ? "Active" : "Inactive"}</Badge><Badge variant="outline">Order {service.sort_order}</Badge></div></div><Button variant="outline" size="sm" onClick={() => start(service)}><Pencil data-icon="inline-start" /> Edit</Button></div>)}
   </CardContent></Card>
 }
