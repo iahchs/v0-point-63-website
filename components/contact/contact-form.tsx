@@ -89,7 +89,7 @@ export function ContactForm() {
         </div>
         <h3 className="text-2xl font-bold mb-4">Thank You!</h3>
         <p className="text-muted-foreground leading-relaxed mb-6">
-          Your message has been received. Our team will review your project details and get back to you within 24-48 hours.
+          Your inquiry has been received. Our team will review your project details and contact you with the next steps.
         </p>
         <Button onClick={() => setIsSubmitted(false)} variant="outline">
           Send Another Message
@@ -106,7 +106,7 @@ export function ContactForm() {
     >
       <div className="mb-8">
         <h2 className="text-2xl lg:text-3xl font-bold mb-2">Start Your Project</h2>
-        <p className="text-muted-foreground">Fill out the form below and we&apos;ll get back to you within 24-48 hours.</p>
+        <p className="text-muted-foreground">For detailed project inquiries and quote requests, provide your project requirements below. For a quick inquiry, email us directly.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -210,7 +210,7 @@ export function ContactForm() {
         </Button>
 
         <div className="text-center pt-4">
-          <p className="text-sm text-muted-foreground mb-2">Or email us directly:</p>
+          <p className="text-sm text-muted-foreground mb-2">Need a quick response? Email us directly:</p>
           <a
             href="mailto:contact.point63@gmail.com"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-80"

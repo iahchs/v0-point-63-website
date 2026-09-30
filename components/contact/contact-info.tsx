@@ -14,7 +14,7 @@ const contactDetails = [
     icon: Phone,
     label: "Phone",
     value: "+63 906 450 0996",
-    href: "tel:+639123456789",
+    href: "tel:+639064500996",
   },
   {
     icon: Mail,
@@ -52,13 +52,21 @@ export function ContactInfo() {
         <div className="space-y-6 mb-10">
           {contactDetails.map((detail) => (
             <div key={detail.label} className="flex items-start gap-4">
-              <div 
+              <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: 'highlight' in detail && detail.highlight ? 'rgba(142, 91, 190, 0.15)' : 'rgba(126, 211, 90, 0.1)' }}
+                style={{
+                  backgroundColor:
+                    "highlight" in detail && detail.highlight
+                      ? "rgba(142, 91, 190, 0.15)"
+                      : "rgba(126, 211, 90, 0.1)",
+                }}
               >
-                <detail.icon 
-                  className="w-5 h-5" 
-                  style={{ color: 'highlight' in detail && detail.highlight ? '#8E5BBE' : undefined }}
+                <detail.icon
+                  className="w-5 h-5"
+                  style={{
+                    color:
+                      "highlight" in detail && detail.highlight ? "#8E5BBE" : undefined,
+                  }}
                 />
               </div>
               <div>
@@ -67,7 +75,10 @@ export function ContactInfo() {
                   <a
                     href={detail.href}
                     className="font-medium transition-colors"
-                    style={{ color: 'highlight' in detail && detail.highlight ? '#8E5BBE' : undefined }}
+                    style={{
+                      color:
+                        "highlight" in detail && detail.highlight ? "#8E5BBE" : undefined,
+                    }}
                   >
                     {detail.value}
                   </a>
@@ -79,7 +90,6 @@ export function ContactInfo() {
           ))}
         </div>
 
-        {/* Social Links */}
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             Follow Us
@@ -99,16 +109,15 @@ export function ContactInfo() {
         </div>
       </div>
 
-      {/* Additional CTA Card */}
       <div className="mt-6 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-6 border border-primary/20">
         <h4 className="font-semibold mb-2">Need a quick response?</h4>
         <p className="text-sm text-muted-foreground mb-4">
-          For urgent inquiries, reach out directly via phone or email. We typically respond within a few hours during business hours.
+          For quick inquiries, contact us directly by email. For detailed project inquiries, use the form to provide your service, budget, timeline, and project requirements.
         </p>
         <a
           href="mailto:contact.point63@gmail.com"
           className="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-          style={{ color: '#8E5BBE' }}
+          style={{ color: "#8E5BBE" }}
         >
           <Mail className="w-4 h-4" />
           contact.point63@gmail.com
