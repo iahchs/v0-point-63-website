@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,6 @@ const budgetRanges = ["Under PHP 75,000", "PHP 75,000 - PHP 150,000", "PHP 150,0
 
 export function ContactForm() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [services, setServices] = useState<Service[]>([])
   const [form, setForm] = useState<FormState>(emptyForm)
   const [submitted, setSubmitted] = useState<{ id: string; type: string; status: string } | null>(null)
