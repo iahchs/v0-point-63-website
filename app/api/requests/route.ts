@@ -25,14 +25,14 @@ export async function POST(request: Request) {
     const type = body.type === "booking" ? "booking" : body.type === "inquiry" ? "inquiry" : ""
     const name = text(body.name, 120), emailAddress = text(body.email, 320), phone = text(body.phone, 40)
     const budget = text(body.budget, 120), message = text(body.message, 5000)
-    const serviceIds = Array.isArray(body.serviceIds) ? [...new Set(body.serviceIds.filter((id: unknown): id is string => typeof id === "string"))] : []
+    const serviceIds: string[] = Array.isArray(body.serviceIds) ? [...new Set(body.serviceIds.filter((id: unknown): id is string => typeof id === "string"))] : []
     if (!type || !name || !emailAddress || !email(emailAddress) || !message || !serviceIds.length || serviceIds.some(id => !SERVICE_IDS.has(id))) return NextResponse.json({ error: "Complete the required fields and select at least one valid service." }, { status: 400 })
     const session = await auth(request)
     if (type === "booking" && !session) return NextResponse.json({ error: "Please sign in before booking." }, { status: 401 })
     const start = body.scheduledStart ? new Date(body.scheduledStart) : null
     if (type === "booking" && (!start || Number.isNaN(start.getTime()) || start.getTime() <= Date.now())) return NextResponse.json({ error: "Choose a future booking date and time." }, { status: 400 })
 
-    const availableServicesResponse = await supabaseAdminDb(`/services?select=id,title,duration_minutes,active,bookable&id=in.(${serviceIds.map(id => encodeURIComponent(id)).join(",")})&active=eq.true&bookable=eq.true`)
+    const availableServicesResponse = await supabaseAdminDb(`/services?select=id,title,duration_minutes,active&id=in.(${serviceIds.map(id => encodeURIComponent(id)).join(",")})&active=eq.true`)
     const services = await availableServicesResponse.json()
     if (!availableServicesResponse.ok || !Array.isArray(services) || services.length !== serviceIds.length) return NextResponse.json({ error: "One or more selected services is unavailable." }, { status: 409 })
     const durations = Object.fromEntries(services.map(service => [service.id, Number(service.duration_minutes) || DURATIONS[service.id] || 60])) as Record<string, number>
