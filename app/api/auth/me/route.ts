@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server"
-import { supabaseAuth, getSupabaseUser } from "@/lib/supabase-rest"
+import { supabaseAuth, supabaseDb, getSupabaseUser } from "@/lib/supabase-rest"
+
+async function getRole(userId: string, accessToken: string) {
+  const response = await supabaseDb(
+    `/user_roles?select=role&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+    {},
+    accessToken,
+  )
+  if (!response.ok) return null
+  const rows = await response.json()
+  return rows[0]?.role || null
+}
 
 export async function GET(request: Request) {
   const cookies = request.headers.get("cookie") || ""
@@ -8,10 +19,13 @@ export async function GET(request: Request) {
 
   if (accessToken) {
     const user = await getSupabaseUser(accessToken)
-    if (user) return NextResponse.json({ user })
+    if (user) {
+      const role = await getRole(user.id, accessToken)
+      return NextResponse.json({ user, role })
+    }
   }
 
-  if (!refreshToken) return NextResponse.json({ user: null }, { status: 401 })
+  if (!refreshToken) return NextResponse.json({ user: null, role: null }, { status: 401 })
 
   const response = await supabaseAuth("/token?grant_type=refresh_token", {
     method: "POST",
@@ -19,9 +33,10 @@ export async function GET(request: Request) {
   })
   const data = await response.json()
 
-  if (!response.ok) return NextResponse.json({ user: null }, { status: 401 })
+  if (!response.ok) return NextResponse.json({ user: null, role: null }, { status: 401 })
 
-  const userResponse = NextResponse.json({ user: data.user })
+  const role = await getRole(data.user.id, data.access_token)
+  const userResponse = NextResponse.json({ user: data.user, role })
   userResponse.cookies.set("p63_access_token", data.access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
