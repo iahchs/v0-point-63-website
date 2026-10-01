@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { getSupabaseUser, supabaseDb } from "@/lib/supabase-rest"
@@ -7,7 +8,7 @@ export const dynamic = "force-dynamic"
 export default async function AdminLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("p63_access_token")?.value
