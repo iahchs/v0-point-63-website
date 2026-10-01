@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   if (!await isAdminAuthenticated(request)) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const url = new URL(request.url)
   const search = url.searchParams.get("search")?.trim().toLowerCase()
-  const response = await supabaseAdminDb("/requests?select=id,user_id,name,email,phone,type,status,created_at,scheduled_start,scheduled_end&order=created_at.desc&limit=1000")
+  const response = await supabaseAdminDb("/requests_decrypted?select=id,user_id,name,email,phone,type,status,created_at,scheduled_start,scheduled_end&order=created_at.desc&limit=1000")
   const rows = await response.json()
   if (!response.ok) return NextResponse.json(rows, { status: response.status })
   const customers = new Map<string, { name: string; email: string; phone: string | null; bookings: number; inquiries: number; lastActivity: string; history: unknown[] }>()
