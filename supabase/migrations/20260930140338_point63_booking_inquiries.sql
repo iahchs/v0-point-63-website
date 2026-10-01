@@ -29,15 +29,26 @@ create table if not exists public.bookings (
 create index if not exists bookings_user_id_idx on public.bookings(user_id);
 create index if not exists bookings_service_start_idx on public.bookings(service_id, scheduled_start);
 
+-- Drop the constraint if it already exists to avoid duplicate_object errors on replay
 do $$
 begin
-  alter table public.bookings
-    add constraint bookings_no_overlap
-    exclude using gist (
-      service_id with =,
-      tstzrange(scheduled_start, scheduled_end, '[)') with &&
-    )
-    where (status in ('pending','confirmed'));
+  if to_regclass('public.bookings') is not null then
+    alter table public.bookings drop constraint if exists bookings_no_overlap;
+  end if;
+end $$;
+
+-- Now safely add the constraint
+do $$
+begin
+  if to_regclass('public.bookings') is not null then
+    alter table public.bookings
+      add constraint bookings_no_overlap
+      exclude using gist (
+        service_id with =,
+        tstzrange(scheduled_start, scheduled_end, '[)') with &&
+      )
+      where (status in ('pending','confirmed'));
+  end if;
 exception
   when duplicate_object then null;
 end $$;
