@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server"
-import { supabaseAuth } from "@/lib/supabase-rest"
+import { supabaseAuth, supabaseDb } from "@/lib/supabase-rest"
+
+async function getRole(userId: string, accessToken: string) {
+  const response = await supabaseDb(
+    `/user_roles?select=role&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+    {},
+    accessToken,
+  )
+  if (!response.ok) return null
+  const rows = await response.json()
+  return rows[0]?.role || null
+}
 
 export async function POST(request: Request) {
   try {
@@ -23,7 +34,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const result = NextResponse.json({ user: data.user })
+    const role = await getRole(data.user.id, data.access_token)
+    const result = NextResponse.json({ user: data.user, role })
     result.cookies.set("p63_access_token", data.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
