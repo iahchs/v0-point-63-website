@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const query = new URLSearchParams({ select: inquirySelect, type: "eq.inquiry", order: "created_at.desc", limit: "1000" })
   if (status && allowedStatuses.has(status)) query.set("status", `eq.${status}`)
 
-  const response = await supabaseAdminDb(`/requests?${query.toString()}`)
+  const response = await supabaseAdminDb(`/requests_decrypted?${query.toString()}`)
   const data = await response.json()
   return NextResponse.json(data, { status: response.status })
 }
@@ -44,27 +44,4 @@ export async function PATCH(request: Request) {
         text: reply,
       })
       if (sent.error) return NextResponse.json({ error: "Unable to send the reply email." }, { status: 502 })
-      const update = await supabaseAdminDb(`/requests?id=eq.${encodeURIComponent(id)}&type=eq.inquiry`, {
-        method: "PATCH",
-        headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ status: "replied", updated_at: new Date().toISOString() }),
-      })
-      const data = await update.json()
-      return NextResponse.json(Array.isArray(data) ? data[0] : data, { status: update.status })
-    }
-
-    if (!allowedStatuses.has(status)) return NextResponse.json({ error: "Provide a valid status or reply." }, { status: 400 })
-    const update = await supabaseAdminDb(`/requests?id=eq.${encodeURIComponent(id)}&type=eq.inquiry`, {
-      method: "PATCH",
-      headers: { Prefer: "return=representation" },
-      body: JSON.stringify({ status, updated_at: new Date().toISOString() }),
-    })
-    const data = await update.json()
-    return NextResponse.json(Array.isArray(data) ? data[0] : data, { status: update.status })
-  } catch (error) {
-    console.error("[admin/inquiries] failed:", error)
-    return NextResponse.json({ error: "Unable to update inquiry." }, { status: 500 })
-  }
-}
-
-export const dynamic = "force-dynamic"
+      const
