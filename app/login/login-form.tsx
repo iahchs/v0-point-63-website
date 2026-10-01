@@ -41,7 +41,14 @@ export default function LoginForm() {
       setLoading(false)
       return
     }
-    const requestedPath = getSafeNextPath()\n    const nextPath = mode === "login" && data.role === "admin"\n      ? "/admin"\n      : requestedPath === "/admin"\n        ? "/contact"\n        : requestedPath\n    window.dispatchEvent(new Event("p63-auth-changed"))\n    router.push(nextPath)
+    const requestedPath = getSafeNextPath()
+    const nextPath =
+      mode === "login" && data.role === "admin"
+        ? "/admin"
+        : requestedPath === "/admin"
+          ? "/contact"
+          : requestedPath
+    router.push(nextPath)
     router.refresh()
   }
 
@@ -54,15 +61,45 @@ export default function LoginForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
-            <div className="space-y-2"><Label htmlFor="email">Email</Label><Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
-            <div className="space-y-2"><Label htmlFor="password">Password</Label><Input id="password" type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
             {message && <p className="text-sm text-muted-foreground">{message}</p>}
-            <Button className="w-full" disabled={loading}>{loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}</Button>
+            <Button className="w-full" disabled={loading}>
+              {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}
+            </Button>
           </form>
-          <button type="button" className="mt-4 w-full text-sm text-primary hover:underline" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setMessage("") }}>
+          <button
+            type="button"
+            className="mt-4 w-full text-sm text-primary hover:underline"
+            onClick={() => {
+              setMode(mode === "login" ? "signup" : "login")
+              setMessage("")
+            }}
+          >
             {mode === "login" ? "Need an account? Sign up" : "Already have an account? Sign in"}
           </button>
-          <Link href="/" className="mt-4 block text-center text-sm text-muted-foreground hover:text-foreground">Back to website</Link>
+          <Link href="/" className="mt-4 block text-center text-sm text-muted-foreground hover:text-foreground">
+            Back to website
+          </Link>
         </CardContent>
       </Card>
     </main>
