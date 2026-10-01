@@ -1,7 +1,9 @@
 import { getSupabaseUser, supabaseDb } from "@/lib/supabase-rest"
 
+// Keep the service-role key server-only. Support both names so existing deployments
+// continue to work while newer deployments can use the standard Supabase name.
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
 
 function getCookie(request: Request, name: string) {
   return request.headers.get("cookie")?.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`))?.[1]
@@ -37,7 +39,7 @@ export async function isSupervisorAuthenticated(request: Request) {
 
 export async function supabaseAdminDb(path: string, options: RequestInit = {}) {
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
-    throw new Error("Supabase admin configuration is not configured")
+    throw new Error("Supabase admin configuration is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.")
   }
 
   return fetch(`${SUPABASE_URL}/rest/v1${path}`, {
