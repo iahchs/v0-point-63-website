@@ -18,11 +18,39 @@ const navLinks = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSignedIn, setIsSignedIn] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  useEffect(() => {
+    let active = true
+    fetch("/api/auth/me", { credentials: "include" })
+      .then((response) => {
+        if (active) setIsSignedIn(response.ok)
+      })
+      .catch(() => {
+        if (active) setIsSignedIn(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    try {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" })
+    } finally {
+      setIsSignedIn(false)
+      setIsLoggingOut(false)
+      setIsMobileMenuOpen(false)
+    }
+  }
   return (
     <header className={cn("fixed top-0 left-0 right-0 z-50 transition-all duration-300", isScrolled ? "bg-card/95 backdrop-blur-md shadow-lg border-b border-border" : "bg-transparent")}>
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -35,7 +63,13 @@ export function Navigation() {
             {navLinks.map((link) => <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">{link.label}</Link>)}
           </div>
           <div className="hidden lg:flex lg:items-center lg:gap-4">
-            <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground"><Link href="/login">Sign In / Book</Link></Button>
+            {isSignedIn ? (
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleLogout} disabled={isLoggingOut}>
+                {isLoggingOut ? "Signing out..." : "Log Out"}
+              </Button>
+            ) : (
+              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground"><Link href="/login">Sign In / Book</Link></Button>
+            )}
           </div>
           <button className="lg:hidden p-2 text-foreground" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle menu">
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -45,7 +79,13 @@ export function Navigation() {
           <div className="lg:hidden absolute top-full left-0 right-0 bg-card/95 backdrop-blur-md border-b border-border shadow-lg">
             <div className="px-4 py-4 space-y-3">
               {navLinks.map((link) => <Link key={link.href} href={link.href} className="block py-2 text-base font-medium text-foreground hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{link.label}</Link>)}
-              <Button asChild className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"><Link href="/login">Sign In / Book</Link></Button>
+              {isSignedIn ? (
+                <Button className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleLogout} disabled={isLoggingOut}>
+                  {isLoggingOut ? "Signing out..." : "Log Out"}
+                </Button>
+              ) : (
+                <Button asChild className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"><Link href="/login">Sign In / Book</Link></Button>
+              )}
             </div>
           </div>
         )}
