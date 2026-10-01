@@ -31,13 +31,30 @@ export async function POST(request: Request) {
     if (type === "booking" && !session) return NextResponse.json({ error: "Please sign in before booking." }, { status: 401 })
     const start = body.scheduledStart ? new Date(body.scheduledStart) : null
     if (type === "booking" && (!start || Number.isNaN(start.getTime()) || start.getTime() <= Date.now())) return NextResponse.json({ error: "Choose a future booking date and time." }, { status: 400 })
-    const end = start ? new Date(start.getTime() + Math.max(...serviceIds.map(id => DURATIONS[id])) * 60000) : null
+
+    const availableServicesResponse = await supabaseAdminDb(`/services?select=id,title,duration_minutes,active,bookable&id=in.(${serviceIds.map(id => encodeURIComponent(id)).join(",")})&active=eq.true&bookable=eq.true`)
+    const services = await availableServicesResponse.json()
+    if (!availableServicesResponse.ok || !Array.isArray(services) || services.length !== serviceIds.length) return NextResponse.json({ error: "One or more selected services is unavailable." }, { status: 409 })
+    const durations = Object.fromEntries(services.map(service => [service.id, Number(service.duration_minutes) || DURATIONS[service.id] || 60])) as Record<string, number>
+    const end = start ? new Date(start.getTime() + Math.max(...serviceIds.map(id => durations[id])) * 60000) : null
     const requestResponse = await supabaseAdminDb("/requests", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: session?.user.id ?? null, type, name, email: emailAddress, phone: phone || null, status: type === "booking" ? "pending" : "new", scheduled_start: start?.toISOString() ?? null, scheduled_end: end?.toISOString() ?? null, budget: budget || null, message }) })
     const saved = await requestResponse.json()
     if (!requestResponse.ok) return NextResponse.json({ error: requestResponse.status === 409 ? "One of those services is already booked for that time." : "Unable to save your request." }, { status: requestResponse.status >= 400 ? requestResponse.status : 500 })
     const savedRequest = Array.isArray(saved) ? saved[0] : saved
     const servicesResponse = await supabaseAdminDb(`/request_services`, { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(serviceIds.map(service_id => ({ request_id: savedRequest.id, service_id, scheduled_start: start?.toISOString() ?? null, scheduled_end: end?.toISOString() ?? null, status: type === "booking" ? "pending" : "new" }))) })
     if (!servicesResponse.ok) { await supabaseAdminDb(`/requests?id=eq.${savedRequest.id}`, { method: "DELETE" }); return NextResponse.json({ error: "Unable to save selected services." }, { status: 500 }) }
+
+    if (type === "booking" && session && start) {
+      const bookingRows = serviceIds.map(service_id => {
+        const serviceEnd = new Date(start.getTime() + durations[service_id] * 60000)
+        return { user_id: session.user.id, service_id, scheduled_start: start.toISOString(), scheduled_end: serviceEnd.toISOString(), status: "pending", notes: message || null }
+      })
+      const bookingResponse = await supabaseAdminDb("/bookings", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(bookingRows) })
+      if (!bookingResponse.ok) {
+        await supabaseAdminDb(`/requests?id=eq.${encodeURIComponent(savedRequest.id)}`, { method: "DELETE" })
+        return NextResponse.json({ error: bookingResponse.status === 409 ? "One of those services is already booked for that time." : "Unable to create the booking." }, { status: bookingResponse.status === 409 ? 409 : 500 })
+      }
+    }
     if (process.env.RESEND_API_KEY) {
       try { await new Resend(process.env.RESEND_API_KEY).emails.send({ from: process.env.RESEND_FROM_EMAIL || "Point 63 <onboarding@resend.dev>", to: ADMIN_EMAIL, replyTo: emailAddress, subject: `New Point 63 ${type}: ${serviceIds.join(", ")}`, text: [`Type: ${type}`, `Name: ${name}`, `Email: ${emailAddress}`, `Phone: ${phone || "Not provided"}`, `Services: ${serviceIds.join(", ")}`, `Schedule: ${start?.toISOString() || "Not provided"}`, `Budget: ${budget || "Not provided"}`, "", message].join("\n") }) } catch (error) { console.error("[requests] Admin notification failed", error) }
     }

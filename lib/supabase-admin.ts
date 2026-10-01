@@ -20,13 +20,16 @@ export async function getAuthenticatedUser(request: Request) {
 export async function isAdminAuthenticated(request: Request) {
   const auth = await getAuthenticatedUser(request)
   if (!auth || !SUPABASE_URL || !SUPABASE_SECRET_KEY) return null
+  const response = await supabaseAdminDb(`/user_roles?select=role&user_id=eq.${encodeURIComponent(auth.user.id)}&role=eq.admin&limit=1`)
+  if (!response.ok) return null
+  const rows = await response.json()
+  return rows[0] ? auth : null
+}
 
-  const response = await supabaseDb(
-    `/admin_users?select=user_id&user_id=eq.${encodeURIComponent(auth.user.id)}&limit=1`,
-    {},
-    auth.accessToken,
-  )
-
+export async function isSupervisorAuthenticated(request: Request) {
+  const auth = await getAuthenticatedUser(request)
+  if (!auth || !SUPABASE_URL || !SUPABASE_SECRET_KEY) return null
+  const response = await supabaseAdminDb(`/user_roles?select=role&user_id=eq.${encodeURIComponent(auth.user.id)}&role=in.(supervisor,admin)&limit=1`)
   if (!response.ok) return null
   const rows = await response.json()
   return rows[0] ? auth : null
