@@ -8,6 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+function getSafeNextPath() {
+  const value = new URLSearchParams(window.location.search).get("next")
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/contact"
+}
+
 export default function LoginForm() {
   const [mode, setMode] = useState<"login" | "signup">("login")
   const [email, setEmail] = useState("")
@@ -15,8 +20,6 @@ export default function LoginForm() {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const nextPath = searchParams.get("next") || "/contact"
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -38,7 +41,7 @@ export default function LoginForm() {
       setLoading(false)
       return
     }
-    router.push(nextPath.startsWith("/") ? nextPath : "/contact")
+    const requestedPath = getSafeNextPath()\n    const nextPath = mode === "login" && data.role === "admin"\n      ? "/admin"\n      : requestedPath === "/admin"\n        ? "/contact"\n        : requestedPath\n    window.dispatchEvent(new Event("p63-auth-changed"))\n    router.push(nextPath)
     router.refresh()
   }
 
