@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     const budget = text(body.budget, 120), message = text(body.message, 5000)
     const serviceIds: string[] = Array.isArray(body.serviceIds) ? [...new Set(body.serviceIds.filter((id: unknown): id is string => typeof id === "string"))] : []
     if (!type || !name || !emailAddress || !email(emailAddress) || !message || !serviceIds.length || serviceIds.some(id => !SERVICE_IDS.has(id))) return NextResponse.json({ error: "Complete the required fields and select at least one valid service." }, { status: 400 })
+    if (type === "booking" && !phone) return NextResponse.json({ error: "A phone number is required for bookings." }, { status: 400 })
     const session = await auth(request)
     if (type === "booking" && !session) return NextResponse.json({ error: "Please sign in before booking." }, { status: 401 })
     const start = body.scheduledStart ? new Date(body.scheduledStart) : null
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
     if (type === "booking" && session && start) {
       const bookingRows = serviceIds.map(service_id => {
         const serviceEnd = new Date(start.getTime() + durations[service_id] * 60000)
-        return { user_id: session.user.id, service_id, scheduled_start: start.toISOString(), scheduled_end: serviceEnd.toISOString(), status: "pending", notes: message || null }
+        return { user_id: session.user.id, service_id, scheduled_start: start.toISOString(), scheduled_end: serviceEnd.toISOString(), status: "pending", notes: message || null, customer_name: name, customer_phone: phone }
       })
       const bookingResponse = await supabaseAdminDb("/bookings", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(bookingRows) })
       if (!bookingResponse.ok) {
